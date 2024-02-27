@@ -11,14 +11,14 @@ const db = mysql.createConnection({
 	database: "books_app",
 });
 
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
 
-app.get('/', (req, res) => {
+app.get("/", (req, res) => {
 	res.json("Hello!");
 });
 
-app.get('/books', (req, res) => {
+app.get("/books", (req, res) => {
 	const query = "SELECT * FROM books"
 	db.query(query, (error, data) => {
 		if (error) {
@@ -29,19 +29,60 @@ app.get('/books', (req, res) => {
 	});
 });
 
-app.post('/books', (req, res) => {
-	const query = 'INSERT INTO BOOKS ("title", "desc", "cover") VALUES (?)';
-	const values = [req.body.title, req.body.desc, req.body.cover];
+app.get("/books/:id", (req, res) => {
+	const query = "SELECT * FROM books WHERE id = ?";
+	const bookId = req.params.id;
+
+	db.query(query, [bookId], (error, data) => {
+		if (error) {
+			return res.json(error);
+		}
+
+		return res.json(data[0]);
+	});
+});
+
+app.post("/books", (req, res) => {
+	const query = "INSERT INTO books (`title`, `desc`, `price`) VALUES (?)";
+	const values = [req.body.title, req.body.desc, req.body.price];
 
 	db.query(query, [values], (error, data) => {
 		if (error) {
 			return res.json(error);
 		}
 
-		return res.json('hey hey');
+		return res.json('Successful');
 	})
 });
 
+app.delete("/books/:id", (req, res) => {
+	const query = "DELETE FROM books WHERE id = ?";
+	const bookId = req.params.id;
+
+	db.query(query, [bookId], (error, data) => {
+		if (error) {
+			return res.json(error);
+		}
+
+		return res.json('Successful');
+	});
+});
+
+app.put("/books/:id", (req, res) => {
+	const query = "UPDATE books SET `title` = ?, `desc` = ?, `price` = ? WHERE id = ?";
+	const bookId = req.params.id;
+
+	const values = [req.body.title, req.body.desc, req.body.price];
+
+	db.query(query, [...values, bookId], (error, data) => {
+		if (error) {
+			return res.json(error);
+		}
+
+		return res.json('Successful');
+	});
+});
+
 app.listen(8800, () => {
-	console.log('success');
+	console.log('Successful');
 });
