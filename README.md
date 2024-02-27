@@ -1,2 +1,1 @@
-# fullstack-crud-app
-fullstack-crud-app
+# MERN (MySQL, Express, React, Node.js) App
